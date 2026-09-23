@@ -112,7 +112,7 @@ class TelegramNotifier:
         currencies = result.get("currency", [])
         currency_str = ", ".join(currencies) if currencies else "USD"
 
-        # Donation amounts
+        # Amounts / pricing
         dr = result.get("donation_range", {})
         if dr.get("suggested"):
             amounts = ", ".join(f"${a}" for a in dr["suggested"])
@@ -121,6 +121,7 @@ class TelegramNotifier:
             amounts_str = amounts
         else:
             amounts_str = "Not detected"
+        amounts_label = "Amounts" if site_type in ("Donation", "Event / Ticket") else "Price Range"
 
         # Recurring
         recurring_str = "Yes" if result.get("recurring") else "No"
@@ -129,12 +130,19 @@ class TelegramNotifier:
         score = result.get("quality_score", 0)
 
         # Site type label
-        site_type = result.get("site_type", "Donation")
+        site_type = result.get("site_type", "Checkout / Payment")
         invoice = result.get("invoice", {})
-        if site_type == "Donation":
-            type_line = "🆕 <b>New Donation Site Found!</b>"
-        else:
-            type_line = f"🆕 <b>New {site_type} Page Found!</b>"
+        type_icons = {
+            "Donation": "🆕 <b>New Donation Site Found!</b>",
+            "Store / Ecommerce": "🛒 <b>New Store / Ecommerce Site Found!</b>",
+            "Subscription / Membership": "🔄 <b>New Subscription Site Found!</b>",
+            "Event / Ticket": "🎟 <b>New Event / Ticket Site Found!</b>",
+            "Invoice Payment": "📋 <b>New Invoice Payment Site Found!</b>",
+            "Bill Pay": "🏦 <b>New Bill Pay Portal Found!</b>",
+            "Payment Portal": "💳 <b>New Payment Portal Found!</b>",
+            "Checkout / Payment": "💰 <b>New Checkout Site Found!</b>",
+        }
+        type_line = type_icons.get(site_type, f"🆕 <b>New {site_type} Site Found!</b>")
 
         msg = (
             f"{type_line}\n"
@@ -148,7 +156,7 @@ class TelegramNotifier:
             f"📫 <b>AVS:</b> {avs_str}\n"
             f"🔐 <b>3DS:</b> {three_ds}\n"
             f"💰 <b>Currency:</b> {currency_str}\n"
-            f"💵 <b>Amounts:</b> {amounts_str}\n"
+            f"💵 <b>{amounts_label}:</b> {amounts_str}\n"
             f"🔄 <b>Recurring:</b> {recurring_str}\n"
             f"⭐ <b>Quality:</b> {score}/100"
         )

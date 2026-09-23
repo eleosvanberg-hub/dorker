@@ -53,128 +53,174 @@ GATEWAY_SIGNATURES = {
         "braintree", "braintree-web", "client.create", "data-braintree",
         "braintree-hosted-fields", "braintree.setup", "bt-hosted-field",
         "braintree.dropin.create", "braintree-dropin", "js.braintreegateway.com",
-        "api.braintreegateway.com", "braintree_client_token",
+        "api.braintreegateway.com", "braintree_client_token", "braintreegateway",
+        "braintree.client", "bt-dropin",
     ],
     "Cybersource": [
         "cybersource", "flex-microform", "cybs", "cybersource.flex",
-        "secureacceptance", "cybersource.com", "sonsofsecurity",
+        "secureacceptance", "cybersource.com", "flex.cybersource.com",
+        "testflex.cybersource.com", "microform.cybersource",
     ],
     "Payflow": [
         "payflow", "payflowlink", "payflow_color", "payflowpro",
         "paypal.com/cgi-bin/webscr", "manager.paypal.com",
+        "payflowpro.paypal.com", "pilot-payflowpro.paypal.com",
     ],
     "Spreedly": [
         "spreedly", "spreedly.com", "core.spreedly.com",
-        "spreedlyjs", "Spreedly.init",
+        "spreedlyjs", "Spreedly.init", "spreedly.tokenize",
+        "spreedly-number", "spreedly-cvv",
     ],
     "Chase": [
         "chase paymentech", "orbital", "safetech",
-        "chase.com/payment", "chasepaymentech",
+        "chase.com/payment", "chasepaymentech", "orbital.paymentech.com",
+        "orbitalvault", "paymentech",
     ],
     "Adyen": [
         "adyen", "adyen-checkout", "checkoutshopper",
         "adyen.encrypt", "adyen-cse", "checkoutshopper-live.adyen.com",
         "checkoutshopper-test.adyen.com", "adyen-checkout__",
+        "adyen.createFromAction", "adyen-payment",
     ],
     "Convergepay": [
         "convergepay", "elavon", "converge.myvirtualmerchant",
-        "api.convergepay.com", "myvirtualmerchant",
-    ],
-    "Stripe": [
-        "stripe", "stripe.js", "js.stripe.com", "stripe-elements",
-        "stripe.createToken", "stripe.confirmCardPayment", "pk_live_",
-        "pk_test_", "stripe-card-element", "StripeElement",
-        "stripe.createPaymentMethod", "api.stripe.com",
-    ],
-    "Square": [
-        "square", "squareup.com", "js.squareup.com", "square-payment-form",
-        "SqPaymentForm", "web.squarecdn.com", "squareupsandbox.com",
+        "api.convergepay.com", "myvirtualmerchant", "elavon.com",
+        "converge.elavon.com",
     ],
     "AuthorizeNet": [
         "authorize.net", "Accept.js", "acceptjs", "authorizenet",
         "js.authorize.net", "AcceptUI", "Accept.dispatchData",
-        "secure.authorize.net", "anet-sdk",
+        "secure.authorize.net", "anet-sdk", "authnet", "acceptHosted",
+        "Accept.HostedForm",
     ],
     "Worldpay": [
         "worldpay", "access.worldpay.com", "payments.worldpay.com",
         "secure.worldpay.com", "worldpay-cse", "Worldpay.useTemplateForm",
+        "worldpay.com/select", "wpwlOptions",
     ],
     "Moneris": [
         "moneris", "esqa.moneris.com", "www3.moneris.com", "moneris-checkout",
-        "monerisjsv2", "moneris.com/HPPtoken",
+        "monerisjsv2", "moneris.com/HPPtoken", "monerisCheckout",
     ],
     "Bambora": [
         "bambora", "web.na.bambora.com", "api.na.bambora.com", "bamboracheckout",
-        "customcheckout.bambora.com",
+        "customcheckout.bambora.com", "na.bambora.com",
     ],
     "BlueSnap": [
         "bluesnap", "sandpay.bluesnap.com", "pay.bluesnap.com", "bluesnap-hosted",
         "BluesnapEncryptedPaymentField", "bluesnap.com/services",
+        "hostedpaymentfields.bluesnap.com",
     ],
-    "2Checkout": [
-        "2checkout", "2co.com", "2checkout.com", "TwoCoInlineCart",
-        "avng8.net", "2checkout-inline",
+    "Nuvei": [
+        "nuvei", "nuvei.com", "ppp.nuvei.com", "secure.safecharge.com",
+        "safecharge", "safecharge.com", "nuvei-checkout", "nuveiSDK",
+    ],
+    "Checkout.com": [
+        "checkout.com", "frames.checkout.com", "cdn.checkout.com",
+        "Frames.init", "checkout-frames", "cko-card-number",
+        "cko-expiry-date", "cko-cvv",
     ],
     "PayU": [
         "payu", "payulatam", "payubiz", "payumoney", "payu.in",
         "secure.payu.com", "payuCheckoutPro", "bolt.js",
+        "payuWidgets", "payu.pl",
     ],
     "Razorpay": [
         "razorpay", "checkout.razorpay.com", "Razorpay.open",
         "razorpay-payment", "razorpay.js", "rzp_live_", "rzp_test_",
+        "api.razorpay.com",
     ],
     "Payeezy": [
         "payeezy", "api.payeezy.com", "first-data", "firstdata",
-        "payeezy.js", "Payeezy.createToken",
+        "payeezy.js", "Payeezy.createToken", "fts.firstdata.com",
     ],
     "NMI": [
         "nmi", "secure.networkmerchants.com", "CollectJS", "collectjs",
         "gateway.merchantservicesltd", "secure.nmi.com",
+        "collect.js", "nmi-payment",
     ],
     "USAePay": [
         "usaepay", "sandbox.usaepay.com", "secure.usaepay.com",
-        "usaepay-form", "PaymentForm.usaepay",
+        "usaepay-form", "PaymentForm.usaepay", "usaepay.com",
     ],
     "CardConnect": [
         "cardconnect", "cardpointe", "api.cardconnect.com",
         "fts-uat.cardconnect.com", "bolt-api.cardconnect.com",
+        "cardconnect.com", "cardsecure",
     ],
     "Paysafe": [
         "paysafe", "paysafe.js", "hosted.paysafe.com", "api.paysafe.com",
-        "paysafecard", "netbanx",
+        "paysafecard", "netbanx", "paysafe.fields",
     ],
     "Clover": [
         "clover", "clover.com", "api.clover.com", "clover-sdk",
-        "checkout.clover.com", "clover-payment",
+        "checkout.clover.com", "clover-payment", "cloverconnector",
     ],
     "Heartland": [
         "heartland", "api.heartlandportico.com", "SecureSubmit",
         "securesubmit", "globalpayments", "hps.js",
+        "heartlandpaymentsystems", "heartland-payment",
     ],
     "iATS": [
         "iatspayments", "iats", "www.iatspayments.com",
-        "aura.iatspayments.com",
+        "aura.iatspayments.com", "iats-payment",
     ],
     "Blackbaud": [
         "blackbaud", "bbpayments", "blackbaud.com", "sky-api",
         "checkout.blackbaud.com", "bbox.blackbaudhosting.com",
+        "bbrequest", "bbcheckout",
     ],
     "Windcave": [
         "windcave", "paymentexpress", "sec.windcave.com", "pxpay",
-        "sec.paymentexpress.com",
+        "sec.paymentexpress.com", "windcave.com",
     ],
     "Flywire": [
         "flywire", "flywire.com", "payment.flywire.com", "flywire-payment",
     ],
     "TouchNet": [
         "touchnet", "commerce.touchnet.com", "uPay", "touchnet.net",
-        "marketplace.touchnet.com",
+        "marketplace.touchnet.com", "touchnet-payment",
     ],
     "CashNet": [
-        "cashnet", "commerce.cashnet.com", "cashnet.com",
+        "cashnet", "commerce.cashnet.com", "cashnet.com", "cashnet-payment",
     ],
     "Nelnet": [
         "nelnet", "quikpayasp.com", "myquikpay", "nelnet.com",
+    ],
+    "PayTrace": [
+        "paytrace", "paytrace.com", "api.paytrace.com",
+        "paytrace.js", "paytrace-payment",
+    ],
+    "Vanco": [
+        "vancopayments", "vanco", "vancopayment.com", "epaymentamerica",
+        "vanco-payment", "givingflow",
+    ],
+    "Helcim": [
+        "helcim", "helcim.com", "api.helcim.com", "helcim-pay",
+        "helcimpayjs", "helcimPay",
+    ],
+    "Shift4": [
+        "shift4", "shift4.com", "i4go", "i4go.js", "lighthouse",
+        "secure.shift4.com", "shift4sdk", "shift4payment",
+    ],
+    "OpenEdge": [
+        "openedge", "openedgepay.com", "openedge.js",
+        "transfirst", "openedge-payment",
+    ],
+    "PayArc": [
+        "payarc", "payarc.net", "payarc.js", "payarc-payment",
+    ],
+    "Stax": [
+        "staxpayments", "stax", "fattmerchant", "stax.js",
+        "fattjs", "omni.fattmerchant.com",
+    ],
+    "ProPay": [
+        "propay", "propay.com", "iframes.propay.com",
+        "propay-payment", "protectpay",
+    ],
+    "Payrix": [
+        "payrix", "payrix.com", "payrix.js",
+        "payrix-payment", "webpay.payrix",
     ],
 }
 
@@ -186,14 +232,13 @@ GATEWAY_SHORT = {
     "Chase": "CH",
     "Adyen": "AD",
     "Convergepay": "CV",
-    "Stripe": "STRP",
-    "Square": "SQR",
     "AuthorizeNet": "ANET",
     "Worldpay": "WP",
     "Moneris": "MNR",
     "Bambora": "BMB",
     "BlueSnap": "BSNP",
-    "2Checkout": "2CO",
+    "Nuvei": "NUV",
+    "Checkout.com": "CKOUT",
     "PayU": "PAYU",
     "Razorpay": "RZP",
     "Payeezy": "PYZ",
@@ -210,6 +255,15 @@ GATEWAY_SHORT = {
     "TouchNet": "TCHN",
     "CashNet": "CSHN",
     "Nelnet": "NLNT",
+    "PayTrace": "PTRC",
+    "Vanco": "VNCO",
+    "Helcim": "HLCM",
+    "Shift4": "SH4",
+    "OpenEdge": "OE",
+    "PayArc": "PARC",
+    "Stax": "STAX",
+    "ProPay": "PPAY",
+    "Payrix": "PRIX",
 }
 
 # ============================================================
@@ -403,10 +457,19 @@ USER_AGENTS = [
 # Crawler link keywords
 # ============================================================
 DONATE_LINK_KEYWORDS = [
+    # Donation
     "donate", "giving", "gift", "contribute", "contribution",
     "support", "pledge", "ways-to-give", "make-a-gift",
     "get-involved", "help-us", "fundrais",
+    # Invoice / bill pay
     "pay-invoice", "invoice", "bill-pay", "make-payment", "pay-bill",
+    # Store / checkout
+    "checkout", "cart", "shop", "store", "buy", "order",
+    "product", "purchase",
+    # Subscription / membership
+    "subscribe", "membership", "subscription", "plans", "pricing",
+    # Event / ticket
+    "tickets", "register", "event", "rsvp",
 ]
 
 # ============================================================
@@ -435,128 +498,262 @@ INVOICE_SIGNATURES = {
 }
 
 # ============================================================
-# Static Search Dorks (60+)
+# Site Type Signatures
+# ============================================================
+STORE_SIGNATURES = {
+    "keywords": [
+        "add to cart", "add to bag", "buy now", "shop now", "checkout",
+        "shopping cart", "product", "price", "qty", "quantity",
+        "in stock", "out of stock", "add_to_cart", "woocommerce",
+        "view cart", "proceed to checkout", "continue shopping",
+        "order summary", "your cart", "cart total",
+    ],
+    "url_patterns": [
+        "/shop", "/store", "/product", "/cart", "/checkout",
+        "/buy", "/order", "/products",
+    ],
+}
+
+SUBSCRIPTION_SIGNATURES = {
+    "keywords": [
+        "subscribe", "subscription", "membership", "monthly plan",
+        "annual plan", "per month", "per year", "billing cycle",
+        "auto-renew", "cancel anytime", "free trial", "upgrade plan",
+        "current plan", "plan details", "recurring billing",
+    ],
+    "url_patterns": [
+        "/subscribe", "/membership", "/plans", "/pricing",
+        "/upgrade", "/billing",
+    ],
+}
+
+EVENT_SIGNATURES = {
+    "keywords": [
+        "buy tickets", "ticket", "register now", "event registration",
+        "reserve your seat", "rsvp", "attend", "admission",
+        "event", "conference", "seminar", "workshop", "webinar",
+    ],
+    "url_patterns": [
+        "/tickets", "/register", "/event", "/events",
+        "/registration", "/rsvp",
+    ],
+}
+
+# ============================================================
+# Static Search Dorks
 # ============================================================
 STATIC_DORKS = [
-    # Cat 1: Gateway-specific plugin signatures
-    '"wp-content/plugins/woo-braintree" inurl:donate',
-    '"braintree-hosted-fields" "donation" site:.org',
-    '"cybersource.environment" "donate" -github',
-    '"adyen-checkout" "give" OR "donate" -stackoverflow',
-    '"spreedly-iframe" "donation" site:.org',
-    '"payflow" "donate" "secure" site:.org',
-    '"converge" "ssl_merchant_id" "donate"',
-    '"braintree.dropin" "donate" -npm -github',
-    '"adyen.encrypt" "donation" -docs',
-    '"cybersource" "flex" "donate" site:.org',
+    # ── Cat 1: NMI (Network Merchants) ─────────────────────
+    '"CollectJS" "checkout" -github -npm -docs',
+    '"collectjs.com" inurl:checkout -github',
+    '"secure.networkmerchants.com" "payment" site:.com',
+    '"collect.js" "card-number" "cvv" -github',
+    'inurl:checkout "secure.nmi.com" -github -stackoverflow',
 
-    # Cat 2: CMS donation plugin pages
-    '"give-form" "make a donation" -wordpress.org -developer',
-    '"charitable-donation" site:.org',
-    '"wp-content/plugins/give" "support" OR "gift" -developer',
-    '"civicrm" "contribute" "amount" site:.org',
-    '"donorbox" braintree site:.org',
-    '"formidable" "payment" "donate" site:.org',
-    '"gravity forms" "donate" "payment" site:.org',
+    # ── Cat 2: Authorize.Net ────────────────────────────────
+    '"Accept.js" "checkout" -github -developer -docs',
+    '"acceptjs" "card" "payment" inurl:checkout -github',
+    '"AcceptUI" "payment" site:.com -github',
+    '"secure.authorize.net" inurl:pay -github -developer',
+    '"Accept.dispatchData" "checkout" -npm -github',
 
-    # Cat 3: Niche nonprofit sectors
-    '"tithe" OR "offering" "donate online" "secure" site:.org',
-    '"alumni" "make a gift" site:.edu',
-    '"annual fund" "give now" site:.edu',
-    '"parish" OR "church" "online giving" "donate"',
-    '"animal rescue" "donate" "payment" site:.org',
-    '"food bank" "donate" "contribution" site:.org',
-    '"humane society" "donate" site:.org',
-    '"habitat for humanity" "donate" site:.org',
-    '"veterans" "donate" "support" site:.org',
-    '"arts council" "donate" site:.org',
-    '"community foundation" "give" "donate" site:.org',
-    '"hospice" "donate" "memorial" site:.org',
-    '"museum" "donate" "support" site:.org',
-    '"public radio" OR "public television" "donate"',
-    '"boys and girls club" "donate" site:.org',
-    '"literacy" "donate" "education" site:.org',
-    '"women\'s shelter" "donate" site:.org',
+    # ── Cat 3: Braintree ────────────────────────────────────
+    '"braintree-hosted-fields" "checkout" -github -npm',
+    '"braintree_client_token" "payment" site:.com -github',
+    '"js.braintreegateway.com" inurl:checkout -github',
+    '"braintree.dropin" "checkout" site:.com -github -npm',
+    '"bt-hosted-field" "card" "amount" -github -docs',
 
-    # Cat 4: URL pattern hunting
-    'inurl:"/give/donate" -github -npm -packagist',
-    'inurl:"/ways-to-give" "online"',
-    'inurl:"/support-us/donate" "payment"',
-    'inurl:"/get-involved/donate" site:.org',
-    'inurl:"donorshops.com"',
-    'inurl:"/cart" "donate" site:.org',
-    'inurl:"/giving" "make a gift" site:.edu',
-    'inurl:"/contribute" "amount" "donate" site:.org',
-    'inurl:"/pledge" "donate" site:.org',
+    # ── Cat 4: Cybersource ──────────────────────────────────
+    '"flex.cybersource.com" inurl:checkout -github',
+    '"cybersource.flex" "payment" site:.com -github',
+    '"flex-microform" "checkout" -github -developer',
+    '"secureacceptance.cybersource.com" -github',
+    '"testflex.cybersource.com" "checkout" site:.com',
 
-    # Cat 5: Form/checkout element hunting
-    '"hosted-field-braintree" "amount"',
-    '"data-cse" "adyen" "donate"',
-    '"Accept.js" "chase" "donation" site:.org',
-    '"tokenize" "payment" "donate" -stackoverflow -github',
-    '"payment-form" "donate" "billing" site:.org',
-    '"cc-number" "donate" "amount" site:.org',
+    # ── Cat 5: Adyen ────────────────────────────────────────
+    '"adyen-checkout" "payment" site:.com -github -npm',
+    '"checkoutshopper-live.adyen.com" inurl:checkout',
+    '"adyen.createFromAction" "payment" -github -docs',
+    '"adyen-checkout__" "card" site:.com -github',
+    '"adyen.encrypt" "checkout" site:.com -github',
 
-    # Cat 6: Regional markets
-    '"donate" "canadian charity" "receipt" site:.ca',
-    '"donate" "charity" "ABN" site:.org.au',
-    '"donate" "registered charity" site:.org.uk',
-    '"fondation" "don" "paiement" site:.ca',
-    '"donate" "charity number" site:.ie',
-    '"donate" "DGR" site:.org.au',
+    # ── Cat 6: Heartland / Global Payments ─────────────────
+    '"SecureSubmit" "checkout" site:.com -github -npm',
+    '"api.heartlandportico.com" "payment" -github',
+    '"heartland-payment" "card" inurl:checkout',
+    '"globalpayments" "checkout" site:.com -github',
+    '"hps.js" "payment" site:.com -github',
 
-    # Cat 7: AVS-focused
-    '"billing address" "donate" "braintree" site:.org',
-    '"street address" "zip" "donate" site:.org',
-    '"billing_address" "postalCode" "donate"',
-    '"address verification" "donation" -github',
+    # ── Cat 7: CardConnect / CardPointe ─────────────────────
+    '"cardpointe" inurl:checkout "payment" -github',
+    '"cardconnect" "tokenize" "payment" site:.com -github',
+    '"bolt-api.cardconnect.com" -github -developer',
+    '"cardsecure" "checkout" site:.com -github',
 
-    # Cat 8: Generic high-quality
-    '"tax deductible" "donate online" "secure" -template -theme',
-    '"501c3" "make a donation" "amount" -irs.gov',
-    '"charitable organization" "donate now" "payment" -wikipedia',
-    '"nonprofit" "support our mission" "give" -indeed -linkedin',
-    '"make a gift" "secure" "online" site:.org -wordpress.org',
-    '"donate" "amount" "recurring" site:.org -github',
+    # ── Cat 8: Spreedly ─────────────────────────────────────
+    '"spreedly-number" "checkout" -github -npm',
+    '"Spreedly.init" "payment" site:.com -github',
+    '"core.spreedly.com" inurl:checkout -github',
+    '"spreedly.tokenize" "card" site:.com -github',
 
-    # Cat 9: Invoice / Bill Pay pages
-    '"pay invoice" "enter invoice number" site:.com -github',
-    'inurl:pay-invoice "payment" -github -stackoverflow',
-    '"invoice payment portal" "billing" -template -demo',
-    '"pay your bill online" "account number" -github',
-    'inurl:billing/pay "invoice" -stackoverflow',
-    '"payment portal" "invoice number" "amount" site:.com',
-    'inurl:make-payment "invoice" "billing" -github',
-    '"pay invoice online" "credit card" -template',
+    # ── Cat 9: Checkout.com ──────────────────────────────────
+    '"frames.checkout.com" "checkout" -github',
+    '"Frames.init" "payment" site:.com -github',
+    '"cko-card-number" "checkout" site:.com',
+    '"cdn.checkout.com/sdk" "payment" -github',
+
+    # ── Cat 10: Nuvei / SafeCharge ──────────────────────────
+    '"safecharge.com" inurl:checkout "payment" -github',
+    '"ppp.nuvei.com" "payment" site:.com -github',
+    '"nuveiSDK" "checkout" -github',
+
+    # ── Cat 11: PayTrace ─────────────────────────────────────
+    '"paytrace.js" "checkout" site:.com -github',
+    '"api.paytrace.com" "payment" -github',
+    '"paytrace" inurl:checkout "card" -github',
+
+    # ── Cat 12: Helcim ──────────────────────────────────────
+    '"helcimPay" "checkout" -github',
+    '"api.helcim.com" "payment" site:.com',
+    '"helcim-pay" inurl:checkout -github',
+
+    # ── Cat 13: Shift4 / i4Go ────────────────────────────────
+    '"i4go.js" "payment" site:.com -github',
+    '"secure.shift4.com" inurl:checkout -github',
+    '"shift4sdk" "payment" site:.com',
+
+    # ── Cat 14: Vanco ────────────────────────────────────────
+    '"vancopayments" "payment" site:.com -github',
+    '"givingflow" "payment" -github -docs',
+    '"epaymentamerica" "online" "payment" -github',
+
+    # ── Cat 15: Stax / Fattmerchant ──────────────────────────
+    '"omni.fattmerchant.com" "payment" -github',
+    '"fattjs" "checkout" site:.com -github',
+    '"staxpayments" inurl:checkout -github',
+
+    # ── Cat 16: USAePay ─────────────────────────────────────
+    '"usaepay" "checkout" "payment" site:.com -github',
+    '"secure.usaepay.com" inurl:pay -github',
+    '"PaymentForm.usaepay" -github -npm',
+
+    # ── Cat 17: Paysafe ─────────────────────────────────────
+    '"hosted.paysafe.com" inurl:checkout -github',
+    '"paysafe.fields" "payment" site:.com -github',
+    '"netbanx" "checkout" site:.com -github',
+
+    # ── Cat 18: BlueSnap ─────────────────────────────────────
+    '"hostedpaymentfields.bluesnap.com" -github',
+    '"BluesnapEncryptedPaymentField" "checkout" -github',
+    '"pay.bluesnap.com" inurl:checkout site:.com',
+
+    # ── Cat 19: Worldpay ─────────────────────────────────────
+    '"wpwlOptions" "checkout" site:.com -github',
+    '"access.worldpay.com" inurl:pay -github',
+    '"Worldpay.useTemplateForm" site:.com -github',
+
+    # ── Cat 20: Store / Ecommerce checkout ──────────────────
+    '"add to cart" "checkout" "billing address" "braintree" site:.com',
+    '"add to cart" inurl:checkout "CollectJS" -github',
+    '"shopping cart" "secure checkout" "acceptjs" site:.com',
+    '"order total" "checkout" "cybersource" site:.com -github',
+    '"proceed to checkout" "heartland" "payment" site:.com',
+    '"buy now" "checkout" "adyen" site:.com -github -docs',
+    '"product" "add to cart" "nmi" "payment" site:.com',
+    '"order summary" "checkout" "authorize.net" site:.com',
+
+    # ── Cat 21: Subscription / Membership ───────────────────
+    '"subscribe" "billing" "braintree" inurl:membership -github',
+    '"monthly" "billing" "adyen" inurl:subscribe site:.com',
+    '"recurring" "billing" "CollectJS" site:.com -github',
+    '"subscription" "payment" "authorize.net" inurl:plans',
+    '"membership" "billing" "heartland" site:.com -github',
+    '"plan" "subscribe" "spreedly" site:.com -github',
+
+    # ── Cat 22: Event / Ticket pages ────────────────────────
+    '"buy tickets" "checkout" "braintree" -github',
+    '"event registration" "payment" "authorize.net" site:.com',
+    '"register now" "billing" "adyen" inurl:event -github',
+    '"ticket" "purchase" "NMI" site:.com -github',
+    '"conference" "registration" "cybersource" -github -docs',
+
+    # ── Cat 23: Invoice / Bill Pay ────────────────────────────
+    '"pay invoice" "enter invoice number" -github -stackoverflow',
+    'inurl:pay-invoice "credit card" -github -template',
+    '"invoice payment" "billing" "authorize.net" site:.com',
     '"bill pay" "account number" "amount due" -github',
-    'inurl:quickpay "invoice" "payment" -docs',
-    '"online bill pay" "enter your" "account" site:.com',
-    'inurl:epay "invoice" OR "billing" -github -npm',
+    'inurl:quickpay "invoice" "payment" -docs -github',
+    '"online bill pay" "card number" "account" site:.com',
+    '"payment portal" "invoice number" -github -template',
+    'inurl:billpay "card" "payment" site:.com -github',
+
+    # ── Cat 24: Donation (focused, high signal) ──────────────
+    '"civicrm" "contribute" "amount" -github -developer',
+    '"donorbox" "braintree" inurl:embed -github',
+    '"give-form" "payment" "braintree" -wordpress.org',
+    '"charitable" "payment" "heartland" site:.org',
+    '"online giving" "CollectJS" site:.org -github',
+    '"donate" "authorize.net" "billing address" site:.org -github',
+    '"fundrais" "checkout" "adyen" site:.org -github',
 ]
 
 # ============================================================
 # Dork Generator Components
 # ============================================================
 DORK_ACTIONS = [
-    'inurl:donate', '"make a donation"', '"give now"', '"support us"',
-    '"ways to give"', '"make a gift"', '"donate online"', '"contribute"',
-    '"donate now"', '"online donation"', '"donate today"', '"giving"',
-    '"support our mission"', '"help us"', '"your gift"', '"your donation"',
-    '"pay invoice"', '"invoice payment"', '"pay your bill"', '"bill pay online"',
+    # Store / checkout
+    'inurl:checkout "payment"',
+    '"add to cart" "payment"',
+    '"buy now" "checkout"',
+    '"order" "billing" "payment"',
+    '"shopping cart" "checkout"',
+    'inurl:shop "checkout" "payment"',
+    # Subscription / membership
+    '"subscribe" "billing"',
+    '"membership" "payment"',
+    '"recurring" "billing"',
+    'inurl:subscribe "payment"',
+    # Events / tickets
+    '"buy tickets" "payment"',
+    '"register" "billing" "payment"',
+    # Invoice / bill pay
+    '"pay invoice"',
+    '"invoice payment"',
+    '"pay your bill"',
+    'inurl:billpay "payment"',
+    # Donation (kept but reduced)
+    '"make a donation"',
+    '"donate" "payment"',
+    '"give now" "billing"',
+    '"contribute" "amount"',
 ]
 
 DORK_SECTORS = [
-    'site:.org', 'site:.edu', 'site:.ca', 'site:.org.uk', 'site:.org.au',
-    '"church"', '"foundation"', '"rescue"', '"food bank"', '"museum"',
-    '"hospital"', '"university"', '"wildlife"', '"homeless"', '"veterans"',
-    '"arts"', '"library"', '"ymca"', '"habitat"', '"shelter"',
-    '"community"', '"children"', '"cancer"', '"heart"', '"medical"',
-    '"environmental"', '"conservation"', '"youth"', '"senior"', '"animal"',
-    '"education"', '"scholarship"', '"relief"', '"mission"', '"ministry"',
-    '"billing portal"', '"payment portal"', '"invoice"', '"customer payment"',
+    # TLD / country
+    'site:.com', 'site:.com -site:.edu -site:.gov',
+    'site:.org', 'site:.ca', 'site:.co.uk',
+    'site:.net', 'site:.us',
+    # Store types
+    '"online store"', '"shop"', '"ecommerce"', '"boutique"',
+    '"clothing" "checkout"', '"electronics" "checkout"',
+    '"furniture" "checkout"', '"food" "checkout"',
+    '"jewelry" "shop"', '"accessories" "checkout"',
+    # Service / membership
+    '"gym" "membership"', '"club" "membership"', '"association" "payment"',
+    '"subscription" "billing"', '"service" "billing"',
+    # Event
+    '"event" "ticket"', '"conference" "registration"',
+    '"workshop" "register"',
+    # Nonprofit (reduced weight)
+    '"foundation"', '"nonprofit" "payment"',
+    '"church" "giving"', '"hospital" "payment"',
+    '"university" "payment"',
+    # Invoice / billing
+    '"billing portal"', '"payment portal"', '"invoice"',
 ]
 
-DORK_EXCLUSIONS = "-github -stackoverflow -wordpress.org -npm -template -theme -demo -docs -api -developer"
+DORK_EXCLUSIONS = "-github -stackoverflow -wordpress.org -npm -template -theme -demo -docs -api -developer -sandbox"
 
 # ============================================================
 # Quality Scoring Weights

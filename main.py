@@ -27,7 +27,7 @@ from exporter import Exporter
 logger = setup_logger()
 
 
-class DonationScanner:
+class PaymentScanner:
 
     def __init__(self):
         self.storage = Storage(DB_PATH)
@@ -48,6 +48,10 @@ class DonationScanner:
         self.last_commoncrawl = None
         self.cycle_count = 0
         self.last_error = None
+
+        # Persistent event loop — avoids stale loop errors from repeated asyncio.run()
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
 
         self._register_commands()
 
@@ -123,7 +127,7 @@ class DonationScanner:
                 chat_id,
             )
             if new_urls:
-                asyncio.run(self._process_urls(new_urls, query))
+                self._loop.run_until_complete(self._process_urls(new_urls, query))
         except Exception as e:
             self.notifier.send(f"❌ Search error: {e}", chat_id)
 
@@ -168,11 +172,13 @@ class DonationScanner:
         signal.signal(signal.SIGINT, self._shutdown)
         signal.signal(signal.SIGTERM, self._shutdown)
 
-        logger.info("=== Donation Scanner Started ===")
+        logger.info("=== Scanner Started ===")
         self.notifier.send("🚀 <b>Scanner started!</b>\nUse /status for info, /help for commands.")
 
         # Start Telegram command polling
         self.notifier.start_polling()
+
+        consecutive_errors = 0
 
         while self.running:
             if self.paused:
@@ -182,21 +188,33 @@ class DonationScanner:
             try:
                 self._run_cycle()
                 self.cycle_count += 1
-            except QuotaExhaustedError:
-                logger.info("All search quotas exhausted")
-                self._sleep_until_midnight()
-            except Exception as e:
-                self.last_error = f"{datetime.now(UTC).strftime('%H:%M')} - {str(e)[:100]}"
-                logger.exception(f"Cycle error: {e}")
-                self._safe_sleep(60)
+                consecutive_errors = 0
+                # Sleep between cycles only on success
+                self._safe_sleep(CYCLE_SLEEP_SECONDS)
 
-            self._safe_sleep(CYCLE_SLEEP_SECONDS)
+            except QuotaExhaustedError:
+                logger.info("All search quotas exhausted — sleeping until midnight")
+                consecutive_errors = 0
+                self._sleep_until_midnight()
+                # No extra sleep here; _sleep_until_midnight already handles it
+
+            except Exception as e:
+                consecutive_errors += 1
+                self.last_error = f"{datetime.now(UTC).strftime('%H:%M')} - {str(e)[:100]}"
+                logger.exception(f"Cycle error (#{consecutive_errors}): {e}")
+
+                # Exponential backoff: 60s, 120s, 240s, 480s — cap at 10 min
+                backoff = min(60 * (2 ** (consecutive_errors - 1)), 600)
+                logger.info(f"Backing off {backoff}s before retry")
+                self._safe_sleep(backoff)
+                # No extra CYCLE_SLEEP here — retry sooner after errors
 
         self.notifier.stop_polling()
         self.notifier.close()
         self.search_client.close()
         self.discovery.close()
         self.storage.close()
+        self._loop.close()
         logger.info("=== Scanner stopped ===")
 
     def _run_cycle(self):
@@ -236,7 +254,7 @@ class DonationScanner:
         logger.info(f"Processing {len(new_urls)} new URLs")
 
         # 4. Fetch, crawl, detect, score, notify
-        asyncio.run(self._process_urls(new_urls))
+        self._loop.run_until_complete(self._process_urls(new_urls))
 
     async def _process_urls(self, urls: list[str], source_dork: str = None):
         """Fetch pages, crawl links, detect gateways, score, and notify."""
@@ -355,5 +373,5 @@ class DonationScanner:
 
 
 if __name__ == "__main__":
-    scanner = DonationScanner()
+    scanner = PaymentScanner()
     scanner.run()
