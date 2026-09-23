@@ -23,11 +23,12 @@ from detector import Detector
 from scorer import QualityScorer
 from notifier import TelegramNotifier
 from exporter import Exporter
+from learner import DorkLearner
 
 logger = setup_logger()
 
 
-class DonationScanner:
+class PaymentScanner:
 
     def __init__(self):
         self.storage = Storage(DB_PATH)
@@ -40,6 +41,7 @@ class DonationScanner:
         self.scorer = QualityScorer()
         self.notifier = TelegramNotifier()
         self.exporter = Exporter(self.storage)
+        self.learner = DorkLearner()
 
         self.running = True
         self.paused = False
@@ -48,6 +50,10 @@ class DonationScanner:
         self.last_commoncrawl = None
         self.cycle_count = 0
         self.last_error = None
+
+        # Persistent event loop — avoids stale loop errors from repeated asyncio.run()
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
 
         self._register_commands()
 
@@ -60,6 +66,7 @@ class DonationScanner:
         self.notifier.register_command("export", self._cmd_export)
         self.notifier.register_command("search", self._cmd_search)
         self.notifier.register_command("dorks", self._cmd_dorks)
+        self.notifier.register_command("learned", self._cmd_learned)
         self.notifier.register_command("pause", self._cmd_pause)
         self.notifier.register_command("resume", self._cmd_resume)
         self.notifier.register_command("status", self._cmd_status)
@@ -123,7 +130,7 @@ class DonationScanner:
                 chat_id,
             )
             if new_urls:
-                asyncio.run(self._process_urls(new_urls, query))
+                self._loop.run_until_complete(self._process_urls(new_urls, query))
         except Exception as e:
             self.notifier.send(f"❌ Search error: {e}", chat_id)
 
@@ -137,6 +144,25 @@ class DonationScanner:
             eff = d.get("efficiency", 0)
             msg += f"• {d['dork'][:60]}...\n"
             msg += f"  Used: {d['times_used']}x | New: {d['total_new_sites']} | Eff: {eff:.1f}\n\n"
+        self.notifier.send(msg, chat_id)
+
+    def _cmd_learned(self, args: str, chat_id: str):
+        stats = self.storage.get_learned_dork_stats()
+        recent = self.storage.get_learned_dorks(limit=8)
+        msg = (
+            f"🧠 <b>Self-Learned Dorks</b>\n"
+            f"━━━━━━━━━━━━━━━━━━━━━\n"
+            f"📦 Total learned: {stats.get('total', 0)}\n"
+            f"🔬 Untested: {stats.get('untested', 0)}\n"
+            f"✅ Total finds from learned: {stats.get('total_finds', 0)}\n\n"
+            f"<b>Latest:</b>\n"
+        )
+        for d in recent:
+            used = d.get("times_used", 0)
+            finds = d.get("total_new_sites", 0)
+            gw = d.get("gateway") or "?"
+            status = "🆕" if used == 0 else f"✅{finds}" if finds else "⬜"
+            msg += f"{status} [{gw}] {d['dork'][:55]}...\n"
         self.notifier.send(msg, chat_id)
 
     def _cmd_pause(self, args: str, chat_id: str):
@@ -168,11 +194,13 @@ class DonationScanner:
         signal.signal(signal.SIGINT, self._shutdown)
         signal.signal(signal.SIGTERM, self._shutdown)
 
-        logger.info("=== Donation Scanner Started ===")
+        logger.info("=== Scanner Started ===")
         self.notifier.send("🚀 <b>Scanner started!</b>\nUse /status for info, /help for commands.")
 
         # Start Telegram command polling
         self.notifier.start_polling()
+
+        consecutive_errors = 0
 
         while self.running:
             if self.paused:
@@ -182,21 +210,33 @@ class DonationScanner:
             try:
                 self._run_cycle()
                 self.cycle_count += 1
-            except QuotaExhaustedError:
-                logger.info("All search quotas exhausted")
-                self._sleep_until_midnight()
-            except Exception as e:
-                self.last_error = f"{datetime.now(UTC).strftime('%H:%M')} - {str(e)[:100]}"
-                logger.exception(f"Cycle error: {e}")
-                self._safe_sleep(60)
+                consecutive_errors = 0
+                # Sleep between cycles only on success
+                self._safe_sleep(CYCLE_SLEEP_SECONDS)
 
-            self._safe_sleep(CYCLE_SLEEP_SECONDS)
+            except QuotaExhaustedError:
+                logger.info("All search quotas exhausted — sleeping until midnight")
+                consecutive_errors = 0
+                self._sleep_until_midnight()
+                # No extra sleep here; _sleep_until_midnight already handles it
+
+            except Exception as e:
+                consecutive_errors += 1
+                self.last_error = f"{datetime.now(UTC).strftime('%H:%M')} - {str(e)[:100]}"
+                logger.exception(f"Cycle error (#{consecutive_errors}): {e}")
+
+                # Exponential backoff: 60s, 120s, 240s, 480s — cap at 10 min
+                backoff = min(60 * (2 ** (consecutive_errors - 1)), 600)
+                logger.info(f"Backing off {backoff}s before retry")
+                self._safe_sleep(backoff)
+                # No extra CYCLE_SLEEP here — retry sooner after errors
 
         self.notifier.stop_polling()
         self.notifier.close()
         self.search_client.close()
         self.discovery.close()
         self.storage.close()
+        self._loop.close()
         logger.info("=== Scanner stopped ===")
 
     def _run_cycle(self):
@@ -207,6 +247,9 @@ class DonationScanner:
 
         # 1. Get dorks and search
         dorks = self.dork_gen.get_dorks_for_cycle(count=10)
+        # Track which dorks came from the learner for stats
+        learned_dork_set = {d["dork"] for d in self.storage.get_learned_dorks(limit=200)}
+
         for dork in dorks:
             if not self.running:
                 break
@@ -214,10 +257,12 @@ class DonationScanner:
                 urls, provider = self.search_client.search(dork)
                 self.storage.log_query(dork, provider, len(urls))
                 new_count = sum(1 for u in urls if not self.storage.site_exists(u))
-                self.storage.update_dork_stats(dork, len(urls), 0)  # new_sites updated after detection
+                self.storage.update_dork_stats(dork, len(urls), 0)
+                if dork in learned_dork_set:
+                    self.storage.update_learned_dork_stats(dork, 0)
                 all_urls.extend(urls)
                 logger.info(f"[{provider}] '{dork[:50]}...' -> {len(urls)} results ({new_count} new)")
-                time.sleep(1)  # small delay between queries
+                time.sleep(1)
             except QuotaExhaustedError:
                 raise
             except Exception as e:
@@ -236,7 +281,7 @@ class DonationScanner:
         logger.info(f"Processing {len(new_urls)} new URLs")
 
         # 4. Fetch, crawl, detect, score, notify
-        asyncio.run(self._process_urls(new_urls))
+        self._loop.run_until_complete(self._process_urls(new_urls))
 
     async def _process_urls(self, urls: list[str], source_dork: str = None):
         """Fetch pages, crawl links, detect gateways, score, and notify."""
@@ -267,7 +312,21 @@ class DonationScanner:
                         f"Score: {detection['quality_score']}"
                     )
 
-            # Crawl for more donate links
+                    # Self-learning: extract dorks from this confirmed page
+                    new_dorks = self.learner.extract_dorks(
+                        url, fetch_result.html,
+                        detection.get("gateways", []),
+                        detection.get("platform", "Custom"),
+                    )
+                    added = 0
+                    for dork in new_dorks:
+                        primary_gw = detection["gateways"][0] if detection["gateways"] else None
+                        if self.storage.add_learned_dork(dork, url, primary_gw):
+                            added += 1
+                    if added:
+                        logger.info(f"Learned {added} new dorks from {url}")
+
+            # Crawl for more payment/checkout links
             found_links = self.crawler.extract_donate_links(url, fetch_result.html)
             for link in found_links:
                 if not self.storage.site_exists(link):
@@ -293,6 +352,15 @@ class DonationScanner:
                             f"✅ CRAWLED: {url} | {detection['short_code']} | "
                             f"Score: {detection['quality_score']}"
                         )
+                        # Learn from crawled finds too
+                        new_dorks = self.learner.extract_dorks(
+                            url, fetch_result.html,
+                            detection.get("gateways", []),
+                            detection.get("platform", "Custom"),
+                        )
+                        for dork in new_dorks:
+                            primary_gw = detection["gateways"][0] if detection["gateways"] else None
+                            self.storage.add_learned_dork(dork, url, primary_gw)
 
     def _run_alternative_discovery(self) -> list[str]:
         """Run crt.sh and Common Crawl on their intervals."""
@@ -355,5 +423,5 @@ class DonationScanner:
 
 
 if __name__ == "__main__":
-    scanner = DonationScanner()
+    scanner = PaymentScanner()
     scanner.run()

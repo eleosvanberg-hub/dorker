@@ -9,7 +9,8 @@ from config import (
     GATEWAY_SIGNATURES, PLATFORM_SIGNATURES, CAPTCHA_SIGNATURES,
     THREE_DS_SIGNATURES, AVS_SIGNATURES, INTEGRATION_SIGNATURES,
     SERVER_HEADERS, SERVER_NAMES, GATEWAY_SHORT, PLATFORM_SHORT,
-    INVOICE_SIGNATURES,
+    INVOICE_SIGNATURES, STORE_SIGNATURES, SUBSCRIPTION_SIGNATURES,
+    EVENT_SIGNATURES,
 )
 from logger_setup import setup_logger
 
@@ -21,14 +22,15 @@ class Detector:
     # ---- Payment Gateways ----
 
     def detect_all_gateways(self, html: str) -> list[str]:
+        """Return matched gateways sorted by confidence (most signatures matched first)."""
         html_lower = html.lower()
-        found = []
+        scores: dict[str, int] = {}
         for gateway, signatures in GATEWAY_SIGNATURES.items():
-            for sig in signatures:
-                if sig.lower() in html_lower:
-                    found.append(gateway)
-                    break
-        return found
+            count = sum(1 for sig in signatures if sig.lower() in html_lower)
+            if count > 0:
+                scores[gateway] = count
+        # Sort descending by match count — primary gateway first, no false-positive noise
+        return sorted(scores.keys(), key=lambda g: -scores[g])
 
     def _gateway_confidence(self, html: str, gateway: str) -> int:
         """Count how many signatures match for a gateway (0-N)."""
@@ -211,6 +213,47 @@ class Detector:
         ]
         return any(sig in html_lower for sig in recurring_sigs)
 
+    # ---- Site Type ----
+
+    def detect_site_type(self, html: str, url: str, invoice: dict) -> str:
+        """
+        Determine what kind of payment site this is.
+        Priority: invoice > store > subscription > event > donation > generic checkout.
+        """
+        if invoice.get("is_invoice"):
+            return invoice["invoice_type"]
+
+        html_lower = html.lower()
+        url_lower = url.lower()
+
+        # Store / ecommerce
+        store_kw = sum(1 for kw in STORE_SIGNATURES["keywords"] if kw in html_lower)
+        store_url = any(p in url_lower for p in STORE_SIGNATURES["url_patterns"])
+        if store_kw >= 3 or (store_kw >= 1 and store_url):
+            return "Store / Ecommerce"
+
+        # Subscription / membership
+        sub_kw = sum(1 for kw in SUBSCRIPTION_SIGNATURES["keywords"] if kw in html_lower)
+        sub_url = any(p in url_lower for p in SUBSCRIPTION_SIGNATURES["url_patterns"])
+        if sub_kw >= 2 or (sub_kw >= 1 and sub_url):
+            return "Subscription / Membership"
+
+        # Event / ticket
+        evt_kw = sum(1 for kw in EVENT_SIGNATURES["keywords"] if kw in html_lower)
+        evt_url = any(p in url_lower for p in EVENT_SIGNATURES["url_patterns"])
+        if evt_kw >= 2 or (evt_kw >= 1 and evt_url):
+            return "Event / Ticket"
+
+        # Donation
+        donation_words = [
+            "donate", "donation", "give now", "make a gift", "contribute",
+            "fundrais", "charitable", "nonprofit", "charity",
+        ]
+        if any(w in html_lower for w in donation_words):
+            return "Donation"
+
+        return "Checkout / Payment"
+
     # ---- Invoice / Bill Pay Page ----
 
     def detect_invoice_page(self, html: str, url: str) -> dict:
@@ -279,14 +322,11 @@ class Detector:
         donation_range = self.detect_donation_range(html)
         recurring = self.detect_recurring(html)
 
-        # Calculate gateway confidence (for primary gateway)
+        # Confidence of primary gateway (already sorted by confidence)
         confidence = self._gateway_confidence(html, gateways[0]) if gateways else 0
 
-        # Determine site type
-        if invoice.get("is_invoice"):
-            site_type = invoice["invoice_type"]
-        else:
-            site_type = "Donation"
+        # Determine site type with full context
+        site_type = self.detect_site_type(html, url, invoice)
 
         return {
             "url": url,
