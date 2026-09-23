@@ -67,10 +67,22 @@ class Storage:
                 total_new_sites INTEGER DEFAULT 0
             );
 
+            CREATE TABLE IF NOT EXISTS learned_dorks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dork TEXT UNIQUE NOT NULL,
+                source_url TEXT,
+                gateway TEXT,
+                times_used INTEGER DEFAULT 0,
+                total_new_sites INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_used TIMESTAMP
+            );
+
             CREATE INDEX IF NOT EXISTS idx_url_normalized ON found_sites(url_normalized);
             CREATE INDEX IF NOT EXISTS idx_found_at ON found_sites(found_at);
             CREATE INDEX IF NOT EXISTS idx_gateways ON found_sites(gateways);
             CREATE INDEX IF NOT EXISTS idx_notified ON found_sites(notified);
+            CREATE INDEX IF NOT EXISTS idx_learned_gateway ON learned_dorks(gateway);
         """)
         self.conn.commit()
 
@@ -269,6 +281,60 @@ class Storage:
                 (limit,),
             )
         return [dict(r) for r in cur.fetchall()]
+
+    # ---- Learned Dorks ----
+
+    def add_learned_dork(self, dork: str, source_url: str, gateway: str) -> bool:
+        """Store a learner-generated dork. Returns True if it's new."""
+        with self._lock:
+            try:
+                self.conn.execute(
+                    """INSERT INTO learned_dorks (dork, source_url, gateway)
+                       VALUES (?, ?, ?)""",
+                    (dork, source_url, gateway),
+                )
+                self.conn.commit()
+                return True
+            except sqlite3.IntegrityError:
+                return False  # already exists
+
+    def get_learned_dorks(self, limit: int = 20) -> list[dict]:
+        """Return learned dorks, prioritising untested ones, then productive ones."""
+        cur = self.conn.execute(
+            """SELECT dork, gateway, times_used, total_new_sites
+               FROM learned_dorks
+               ORDER BY
+                   -- Untested first
+                   CASE WHEN times_used = 0 THEN 0 ELSE 1 END,
+                   -- Then by efficiency
+                   CAST(total_new_sites AS REAL) / MAX(times_used, 1) DESC,
+                   created_at DESC
+               LIMIT ?""",
+            (limit,),
+        )
+        return [dict(r) for r in cur.fetchall()]
+
+    def update_learned_dork_stats(self, dork: str, new_sites: int):
+        with self._lock:
+            self.conn.execute(
+                """UPDATE learned_dorks
+                   SET times_used = times_used + 1,
+                       last_used  = CURRENT_TIMESTAMP,
+                       total_new_sites = total_new_sites + ?
+                   WHERE dork = ?""",
+                (new_sites, dork),
+            )
+            self.conn.commit()
+
+    def get_learned_dork_stats(self) -> dict:
+        cur = self.conn.execute(
+            """SELECT COUNT(*) as total,
+                      SUM(CASE WHEN times_used = 0 THEN 1 ELSE 0 END) as untested,
+                      SUM(total_new_sites) as total_finds
+               FROM learned_dorks"""
+        )
+        row = cur.fetchone()
+        return dict(row) if row else {}
 
     # ---- Export ----
 

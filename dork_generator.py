@@ -18,29 +18,42 @@ class DorkGenerator:
         self.storage = storage
 
     def get_dorks_for_cycle(self, count: int = 10) -> list[str]:
-        """Get a mix of static, generated, and productive dorks for this cycle."""
+        """
+        Build a cycle's dork list from four sources:
+          - Learned dorks  (~20%) — auto-generated from previously found sites
+          - Top productive (~10%) — historically high-yield dorks
+          - Static dorks   (~40%) — curated high-signal queries
+          - Generated      (~30%) — freshly mutated from action+sector+gateway
+        """
         dorks = []
 
-        # 1. Include top productive dorks (if we have history)
+        # 1. Learned dorks from the self-learning engine
+        learned_slots = max(1, count // 5)
+        learned = self.storage.get_learned_dorks(limit=learned_slots * 3)
+        if learned:
+            random.shuffle(learned)
+            dorks.extend(d["dork"] for d in learned[:learned_slots])
+
+        # 2. Top productive dorks from history
         productive = self.storage.get_productive_dorks(limit=5)
         if productive:
-            dorks.extend(d["dork"] for d in productive[:3])
+            dorks.extend(d["dork"] for d in productive[:max(1, count // 10)])
 
-        # 2. Pick random static dorks
+        # 3. Static dorks
         static_pool = list(STATIC_DORKS)
         random.shuffle(static_pool)
         remaining = count - len(dorks)
         dorks.extend(static_pool[:max(remaining // 2, 3)])
 
-        # 3. Generate fresh dorks
+        # 4. Generated dorks to fill the rest
         remaining = count - len(dorks)
         if remaining > 0:
             dorks.extend(self._generate_random_dorks(remaining))
 
-        # 4. Add a freshness dork (recently indexed pages)
+        # 5. Freshness dork
         dorks.append(self._freshness_dork())
 
-        # 5. Remove stale/retired dorks
+        # 6. Drop stale dead-end dorks
         stale = set(self.storage.get_stale_dorks(min_uses=10))
         dorks = [d for d in dorks if d not in stale]
 

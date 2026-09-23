@@ -258,6 +258,7 @@ class TelegramNotifier:
                 "/export [gateway] - Export CSV\n"
                 "/search \"query\" - Custom search\n"
                 "/dorks - Most productive dorks\n"
+                "/learned - Self-learned dork stats\n"
                 "/pause - Pause scanner\n"
                 "/resume - Resume scanner\n"
                 "/status - Bot status",
