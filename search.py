@@ -18,7 +18,13 @@ logger = setup_logger("cern.search")
 
 
 class QuotaExhaustedError(Exception):
-    """All search providers have exhausted their daily quota."""
+    """All configured providers have hit their daily query limit."""
+    pass
+
+
+class SearchNetworkError(Exception):
+    """All configured providers failed with transient errors (timeout, 5xx, etc.).
+    This is NOT a quota issue — retry after a short backoff."""
     pass
 
 
@@ -32,12 +38,21 @@ class SearchClient:
 
     def search(self, query: str, num_results: int = 10) -> tuple[list[str], str]:
         """Search using the fallback chain. Returns (urls, provider_used).
-        Raises QuotaExhaustedError if all providers exhausted."""
+
+        Raises:
+            QuotaExhaustedError   — every configured provider has hit its daily limit.
+            SearchNetworkError    — every configured provider failed with a transient
+                                    error (timeout, 5xx); quota was NOT consumed.
+        """
+        quota_hit: list[str] = []
+        errors: list[str] = []
+
         for provider in self.PROVIDERS:
             if not self._provider_available(provider):
                 continue
             if not self.storage.can_query(provider, DAILY_LIMITS.get(provider, 0)):
                 logger.info(f"Quota exhausted for {provider}, trying next")
+                quota_hit.append(provider)
                 continue
             try:
                 urls = self._search_provider(provider, query, num_results)
@@ -45,9 +60,26 @@ class SearchClient:
                 return urls, provider
             except Exception as e:
                 logger.warning(f"Search failed with {provider}: {e}")
+                errors.append(provider)
                 continue
 
-        raise QuotaExhaustedError("All search providers exhausted for today")
+        # Only call it a quota exhaustion if at least one provider actually hit
+        # its daily limit.  Pure network/timeout failures deserve a short retry.
+        if quota_hit and not errors:
+            raise QuotaExhaustedError("All configured providers hit their daily limit")
+        if errors and not quota_hit:
+            raise SearchNetworkError(
+                f"All providers failed with transient errors: {errors}"
+            )
+        if quota_hit and errors:
+            # Mixed: some quota, some errors — treat as quota exhausted so we
+            # don't hammer APIs that are clearly having trouble.
+            raise QuotaExhaustedError(
+                f"Providers quota-hit: {quota_hit}; providers errored: {errors}"
+            )
+
+        # No provider was even available (no API keys configured at all)
+        raise QuotaExhaustedError("No search providers configured")
 
     def _provider_available(self, provider: str) -> bool:
         """Check if provider has API key configured."""
