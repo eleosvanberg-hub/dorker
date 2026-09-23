@@ -14,7 +14,7 @@ from config import (
 )
 from logger_setup import setup_logger
 from storage import Storage
-from search import SearchClient, QuotaExhaustedError
+from search import SearchClient, QuotaExhaustedError, SearchNetworkError
 from discovery import AlternativeDiscovery
 from dork_generator import DorkGenerator
 from fetcher import PageFetcher
@@ -218,7 +218,16 @@ class PaymentScanner:
                 logger.info("All search quotas exhausted — sleeping until midnight")
                 consecutive_errors = 0
                 self._sleep_until_midnight()
-                # No extra sleep here; _sleep_until_midnight already handles it
+
+            except SearchNetworkError as e:
+                # Transient failure (timeout, 5xx) — NOT a quota issue.
+                # Wait 5 minutes then retry; do not sleep until midnight.
+                consecutive_errors += 1
+                self.last_error = f"{datetime.now(UTC).strftime('%H:%M')} - network: {str(e)[:80]}"
+                logger.warning(f"Search network error (#{consecutive_errors}): {e}")
+                backoff = min(300 * consecutive_errors, 1800)  # 5m, 10m, 15m, cap 30m
+                logger.info(f"Retrying in {backoff}s")
+                self._safe_sleep(backoff)
 
             except Exception as e:
                 consecutive_errors += 1
@@ -263,7 +272,7 @@ class PaymentScanner:
                 all_urls.extend(urls)
                 logger.info(f"[{provider}] '{dork[:50]}...' -> {len(urls)} results ({new_count} new)")
                 time.sleep(1)
-            except QuotaExhaustedError:
+            except (QuotaExhaustedError, SearchNetworkError):
                 raise
             except Exception as e:
                 logger.warning(f"Search failed for dork: {e}")
